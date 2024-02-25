@@ -3,24 +3,6 @@ import ServiceProvider from "../model/serviceProviderModel.js";
 import { io } from "../index.js";
 import ProfileImgProvider from "../model/profileImgProviderModel.js";
 
-// export const uploadimgurl = async (req, res) => {
-//   try {
-//     const { serviceProviderId, imagePath } = req.body;
-
-//     // Save the image URL to MongoDB
-//     const profileImgProvider = new ProfileImgProvider({
-//       serviceProviderId,
-//       imagePath,
-//     });
-
-//     const savedImage = await profileImgProvider.save();
-
-//     res.status(201).json(savedImage);
-//   } catch (error) {
-//     console.error("Error saving image URL:", error);
-//     res.status(500).send("Internal Server Error");
-//   }
-// };
 export const uploadimgurl = async (req, res) => {
   try {
     const { serviceProviderId, imagePath } = req.body;
