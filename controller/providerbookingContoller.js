@@ -1,6 +1,7 @@
 import User from "../model/userModel.js";
 import ServiceProvider from "../model/serviceProviderModel.js";
 import Booking from "../model/bookingModel.js";
+import DeclineBooking from "../model/declineBookingModel.js";
 
 export const acceptBooking = async (req, res) => {
   try {

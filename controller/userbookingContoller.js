@@ -107,3 +107,15 @@ export const paymentDone = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+export const fetchBookingUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const bookings = await Booking.find({ userId });
+    res.json(bookings);
+  } catch (error) {
+    console.error("Error fetching bookings:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
