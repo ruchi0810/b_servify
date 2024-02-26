@@ -2,19 +2,6 @@ import User from "../model/userModel.js";
 import ServiceProvider from "../model/serviceProviderModel.js";
 import Booking from "../model/bookingModel.js";
 
-export const getbooking = async (req, res) => {
-  try {
-    const { serviceProviderId } = req.query;
-    const bookings = await Booking.find({
-      serviceProviderId,
-      status: "pending",
-    });
-    res.json(bookings);
-  } catch (error) {
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-};
-
 export const acceptBooking = async (req, res) => {
   try {
     const { bookingId } = req.params;
@@ -67,6 +54,18 @@ export const declineBooking = async (req, res) => {
       providerstatus: booking.providerstatus,
     });
   } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+export const fetchBooking = async (req, res) => {
+  try {
+    const { serviceProviderId } = req.params;
+
+    const bookings = await Booking.find({ serviceProviderId });
+    res.json(bookings);
+  } catch (error) {
+    console.error("Error fetching bookings:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
