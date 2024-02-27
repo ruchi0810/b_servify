@@ -3,15 +3,21 @@ import ServiceProvider from "../model/serviceProviderModel.js";
 import Booking from "../model/bookingModel.js";
 import CompletedBooking from "../model/completedBookingModel.js";
 import CancelBooking from "../model/cancelBookingModel.js";
+
 export const createbooking = async (req, res) => {
   try {
     const { userId, serviceProviderId } = req.body;
     const existingBooking = await Booking.findOne({
       userId,
       serviceProviderId,
-    });
+    })
+      .sort({ _id: -1 })
+      .limit(1);
 
-    if (existingBooking) {
+    if (
+      existingBooking &&
+      !["cancel from sp", "cancel"].includes(existingBooking.userstatus)
+    ) {
       res.json("booked");
       return;
     }
@@ -27,16 +33,26 @@ export const createbooking = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 export const checkbookingstatus = async (req, res) => {
   try {
     const { userId, serviceProviderId } = req.body;
     const existingBooking = await Booking.findOne({
       userId,
       serviceProviderId,
-    });
+    })
+      .sort({ _id: -1 })
+      .limit(1);
 
     if (existingBooking) {
-      res.json("booked");
+      if (
+        existingBooking.userstatus === "cancel" ||
+        existingBooking.userstatus === "cancel from sp"
+      ) {
+        res.json("notbooked");
+      } else {
+        res.json("booked");
+      }
     } else {
       // If no booking exists, return null or any other indicator
       res.json("notbooked");
