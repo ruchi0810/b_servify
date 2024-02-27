@@ -48,11 +48,19 @@ export const declineBooking = async (req, res) => {
       res.status(404).json({ error: "Booking not found" });
       return;
     }
+    const declineBooking = await DeclineBooking.create({
+      bookingId: booking._id,
+      userId: booking.userId,
+      serviceProviderId: booking.serviceProviderId,
+      userstatus: "cancel from sp",
+      providerstatus: "cancel booking",
+    });
 
     res.json({
       bookingId: booking._id,
       userstatus: booking.userstatus,
       providerstatus: booking.providerstatus,
+      declineBooking,
     });
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
@@ -70,3 +78,18 @@ export const fetchBooking = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+// export const fetchBooking = async (req, res) => {
+//   try {
+//     const { serviceProviderId } = req.params;
+
+//     const bookings = await Booking.find({
+//       serviceProviderId,
+//       userstatus: { $ne: "cancel" },
+//     });
+//     res.json(bookings);
+//   } catch (error) {
+//     console.error("Error fetching bookings:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// };
