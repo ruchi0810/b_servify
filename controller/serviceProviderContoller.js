@@ -522,6 +522,18 @@ export const getServiceProviderDetailsByEmail = async (req, res) => {
     res.status(500).json({ error: error });
   }
 };
+export const getServiceProviderDetailsById = async (req, res) => {
+  try {
+    const id = req.body;
+    const userExist = await ServiceProvider.findById(id);
+    if (!userExist) {
+      return res.status(404).json({ msg: "service provider data not found" });
+    }
+    res.status(200).json(userExist);
+  } catch (error) {
+    res.status(500).json({ error: error });
+  }
+};
 
 export const getOneServiceProviderEmail = async (req, res) => {
   try {
@@ -533,5 +545,30 @@ export const getOneServiceProviderEmail = async (req, res) => {
     res.status(200).json(userExist);
   } catch (error) {
     res.status(500).json({ error: error });
+  }
+};
+
+//search by service
+export const citydomain = async (req, res) => {
+  try {
+    const city = req.params.city;
+    const domain = req.params.domain;
+
+    const filter = {
+      $and: [
+        { domain: { $regex: new RegExp("^" + domain + "$", "i") } },
+        { city: { $regex: new RegExp("^" + city + "$", "i") } },
+      ],
+    };
+    const filterData = await ServiceProvider.find(filter);
+
+    if (filterData.length === 0) {
+      return res.status(404).json({ msg: "Data not found" }); // Add return here
+    }
+    return res.status(200).json(filterData); // Add return here
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: error.message || "Internal Server Error" }); // Add return here
   }
 };

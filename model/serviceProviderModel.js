@@ -105,8 +105,9 @@ const serviceProviderSchema = new mongoose.Schema({
 serviceProviderSchema.pre("findOneAndDelete", async function (next) {
   const serviceProviderId = this._conditions._id;
 
-  // Delete associated reviews
+  // Delete associated reviews and ratings
   await Review.deleteMany({ serviceProviderId });
+  await Rating.deleteMany({ serviceProviderId });
 
   next();
 });

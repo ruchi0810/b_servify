@@ -11,6 +11,7 @@ import {
   updatewithlogintoken,
   forgotPassword,
 } from "../controller/userController.js";
+import { citydomain } from "../controller/serviceProviderContoller.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 const route = express.Router();
 
@@ -24,5 +25,7 @@ route.put("/update/:id", update);
 route.put("/updatewithlogintoken/:id", authMiddleware, updatewithlogintoken);
 route.delete("/delete/:id", deleteUser);
 route.post("/forgotpassword", forgotPassword);
+
+route.get("/:city/:domain", citydomain);
 
 export default route;
