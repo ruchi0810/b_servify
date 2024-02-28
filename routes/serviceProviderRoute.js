@@ -27,7 +27,7 @@ route.post(
   "/getServiceProviderDetailsByEmail",
   getServiceProviderDetailsByEmail
 );
-route.get("/getonesp/:spemail", getOneServiceProviderEmail);
+route.get("/getonesp/:email", getOneServiceProviderEmail);
 route.put("/update/:id", updateServiceProvider);
 route.delete("/delete/:id", deleteServiceProvider);
 route.post("/search", SearchServiceProvider_byservice);

@@ -6,40 +6,65 @@ import User from "../model/userModel.js";
 import bcrypt from "bcrypt";
 
 const serviceProviderSchema = new mongoose.Schema({
-  spname: {
+  fname: {
     type: String,
     required: true,
   },
-  spmobile: {
+  lname: {
     type: String,
     required: true,
   },
-  spaddress: {
+  age: {
+    type: Number,
+    required: true,
+  },
+  gender: {
     type: String,
     required: true,
   },
-  spcity: {
+  mobile: {
     type: String,
     required: true,
   },
-  spservicename: {
+  location: {
     type: String,
     required: true,
   },
+  city: {
+    type: String,
+    required: true,
+  },
+  domain: {
+    type: String,
+    required: true,
+  },
+  profession: {
+    type: String,
+    required: true,
+  },
+  jobs: {
+    type: Number,
+    required: true,
+  },
+  experties: [
+    {
+      type: String,
+    },
+  ],
 
-  spemail: {
+  email: {
     type: String,
     required: true,
     unique: true,
     validate: {
-      validator: function (spemail) {
+      validator: function (email) {
         const emailRegx = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-        return emailRegx.test(spemail);
+        return emailRegx.test(email);
       },
       message: "Email format is invalid",
     },
   },
-  sppassword: {
+  password: {
     type: String,
     required: true,
     validate: {
@@ -65,6 +90,17 @@ const serviceProviderSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  emailvarified: {
+    type: String,
+    default: false,
+  },
+  mobilevarified: {
+    type: String,
+    default: false,
+  },
+  profileimg: {
+    type: String,
+  },
 });
 serviceProviderSchema.pre("findOneAndDelete", async function (next) {
   const serviceProviderId = this._conditions._id;
@@ -76,10 +112,10 @@ serviceProviderSchema.pre("findOneAndDelete", async function (next) {
 });
 serviceProviderSchema.pre("save", async function (next) {
   const serviceprovider = this;
-  if (!serviceprovider.isModified("sppassword")) return next();
+  if (!serviceprovider.isModified("password")) return next();
   try {
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(serviceprovider.sppassword, salt);
+    const hashedPassword = await bcrypt.hash(serviceprovider.password, salt);
     //serviceprovider.sppassword = hashedPassword;
     next();
   } catch (error) {

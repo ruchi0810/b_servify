@@ -176,7 +176,7 @@ import cors from "cors";
 import { createServer } from "http"; // Import the createServer function from http
 import { Server } from "socket.io"; // Import the Server class from socket.io
 import userRoute from "./routes/userRoute.js";
-import imageRoute from "./routes/imageRoute.js";
+
 import serviceProviderRoute from "./routes/serviceProviderRoute.js";
 import reviewRoute from "./routes/reviewRoute.js";
 import ratingRoute from "./routes/ratingRoute.js";
@@ -237,6 +237,6 @@ app.use("/api/service-providers", serviceProviderRoute);
 app.use("/api/reviews", reviewRoute);
 app.use("/api/ratings", ratingRoute);
 app.use("/api/check", check_user_is_providerRoute);
-app.use("/api/image", imageRoute);
+
 app.use("/api/imgproviderurl", profileImgProviderRoute);
 app.use("/api/booking", bookingRoute);

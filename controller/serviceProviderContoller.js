@@ -7,30 +7,17 @@ import bcrypt from "bcrypt";
 import mongoose from "mongoose"; // Import mongoose
 import AllDeletedServiceProvider from "../model/allDeletedServiceProviderModel.js";
 
-// export const createServiceProvider = async (req, res) => {
-//   try {
-//     const serviceProviderData = new ServiceProvider(req.body);
-//     if (!serviceProviderData) {
-//       return res.status(404).json({ msg: "Service provider data not found" });
-//     }
-
-//     const savedData = await serviceProviderData.save();
-//     res.status(200).json(savedData);
-//   } catch (error) {
-//     res.status(500).json({ error: error });
-//   }
-// };
 export const createServiceProvider = async (req, res) => {
   try {
-    const { sppassword, ...serviceProviderDataWithoutPassword } = req.body;
+    const { password, ...serviceProviderDataWithoutPassword } = req.body;
 
     // Manually hash the password before creating the user
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(sppassword, salt);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
     const serviceProviderData = new ServiceProvider({
       ...serviceProviderDataWithoutPassword,
-      sppassword: hashedPassword,
+      password: hashedPassword,
     });
 
     if (!serviceProviderData) {
@@ -81,15 +68,6 @@ export const updateServiceProvider = async (req, res) => {
     const updatedData = await ServiceProvider.findByIdAndUpdate(id, req.body, {
       new: true,
     });
-    // await Review.updateMany(
-    //   { serviceProviderId: id },
-    //   {
-    //     $set: {
-    //       "serviceProviderId.spname": req.body.spname,
-    //       "serviceProviderId.spemail": req.body.spemail,
-    //     },
-    //   }
-    // );
 
     res.status(200).json(updatedData);
   } catch (error) {
@@ -189,13 +167,14 @@ export const deleteServiceProvider = async (req, res) => {
     const deletedServiceProvider = new AllDeletedServiceProvider({
       serviceProviderId: serviceProviderExist._id,
       serviceProviderInfo: {
-        spname: serviceProviderExist.spname,
-        spmobile: serviceProviderExist.spmobile,
-        spaddress: serviceProviderExist.spaddress,
-        spcity: serviceProviderExist.spcity,
-        spservicename: serviceProviderExist.spservicename,
-        spemail: serviceProviderExist.spemail,
-        sppassword: serviceProviderExist.sppassword,
+        lname: serviceProviderExist.lname,
+        fname: serviceProviderExist.fnamename,
+        mobile: serviceProviderExist.mobile,
+        location: serviceProviderExist.location,
+        city: serviceProviderExist.city,
+        domain: serviceProviderExist.domain,
+        email: serviceProviderExist.email,
+        password: serviceProviderExist.password,
         overallRating: serviceProviderExist.overallRating,
       },
       reviews: formattedReviews,
@@ -219,18 +198,13 @@ export const deleteServiceProvider = async (req, res) => {
 //search by service
 export const SearchServiceProvider_byservice = async (req, res) => {
   try {
-    const { query } = req.body;
+    const { query1, query2 } = req.body;
     const filter = {
-      $or: [
+      $and: [
         {
-          spservicename: { $regex: `\\b${query}\\b`, $options: "i" },
-
-          // for exact term finding
+          domain: { $regex: `\\b${query1}\\b`, $options: "i" },
+          city: { $regex: `\\b${query2}\\b`, $options: "i" },
         },
-        // {
-        //   spcity: { $regex: query, $options: "i" },
-
-        // },
       ],
     };
     const filterData = await ServiceProvider.find(filter);
@@ -248,7 +222,7 @@ export const getServiceProviderByServiceName = async (req, res) => {
   try {
     const { serviceName } = req.params;
     const serviceProvider = await ServiceProvider.find({
-      spservicename: serviceName,
+      domain: serviceName,
     });
 
     if (!serviceProvider) {
@@ -407,68 +381,24 @@ export const addRatingToServiceProvider = async (req, res) => {
   }
 };
 
-// export const getReviewsByServiceProviderAndUser = async (req, res) => {
-//   try {
-//     const { serviceProviderId, userId } = req.params;
-
-//     // Ensure that the service provider and user exist
-//     const serviceProvider = await ServiceProvider.findById(serviceProviderId);
-//     const user = await User.findById(userId);
-
-//     if (!serviceProvider || !user) {
-//       return res
-//         .status(404)
-//         .json({ msg: "Service provider or user not found" });
-//     }
-
-//     // Retrieve reviews for the specified service provider
-//     const reviews = await Review.find({ serviceProviderId })
-//       .sort({ createdAt: -1 }) // Sort by creation date in descending order
-//       .populate({
-//         path: "userId",
-//         select: "name mobile",
-//       });
-
-//     // Separate reviews by the specified user and other users
-//     const userReviews = [];
-//     const otherUserReviews = [];
-
-//     reviews.forEach((review) => {
-//       if (review.userId._id.toString() === userId) {
-//         userReviews.unshift(review); // Add user's reviews to the beginning of the array
-//       } else {
-//         otherUserReviews.push(review); // Add other users' reviews to the end of the array
-//       }
-//     });
-
-//     // Combine user reviews and other user reviews
-//     const combinedReviews = userReviews.concat(otherUserReviews);
-
-//     res.status(200).json(combinedReviews);
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// };
-// //GET http://localhost:8000/api/service-providers/SP_ID/reviews/USER_ID
-
 export const signup = async (req, res) => {
   try {
-    const { spemail, sppassword, ...otherData } = req.body;
+    const { email, password, ...otherData } = req.body;
 
     // Check if the user already exists
-    const existingUser = await ServiceProvider.findOne({ spemail });
+    const existingUser = await ServiceProvider.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ msg: "Sp already exists" });
     }
 
     // Hash the password
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(sppassword, salt);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
     // Create a new user instance with hashed password
     const newUser = new ServiceProvider({
-      spemail,
-      sppassword: hashedPassword,
+      email,
+      password: hashedPassword,
       ...otherData,
     });
 
@@ -482,17 +412,14 @@ export const signup = async (req, res) => {
 };
 export const login = async (req, res) => {
   try {
-    const { spemail, sppassword } = req.body;
-    const userExist = await ServiceProvider.findOne({ spemail });
+    const { email, password } = req.body;
+    const userExist = await ServiceProvider.findOne({ email });
     if (!userExist) {
       return res.status(400).json({ message: "serviceprovider not exist" });
     }
 
     // compare password with database password
-    const isValidPassword = await bcrypt.compare(
-      sppassword,
-      userExist.sppassword
-    );
+    const isValidPassword = await bcrypt.compare(password, userExist.password);
     if (!isValidPassword) {
       return res.status(401).json({ message: "email or password invalid" });
     }
@@ -543,10 +470,10 @@ export const updatewithlogintoken = async (req, res) => {
     if (!userExist) {
       return res.status(404).json({ msg: "serviceProvider data not found" });
     }
-    if (req.body.sppassword) {
+    if (req.body.password) {
       const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(req.body.sppassword, salt);
-      req.body.sppassword = hashedPassword;
+      const hashedPassword = await bcrypt.hash(req.body.password, salt);
+      req.body.password = hashedPassword;
     }
     const updatedData = await ServiceProvider.findByIdAndUpdate(id, req.body, {
       new: true,
@@ -560,10 +487,10 @@ export const updatewithlogintoken = async (req, res) => {
 
 export const forgotPassword = async (req, res) => {
   try {
-    const { spemail, newPassword } = req.body;
+    const { email, newPassword } = req.body;
 
     // Check if the email exists in the user collection
-    const existingUser = await ServiceProvider.findOne({ spemail });
+    const existingUser = await ServiceProvider.findOne({ email });
 
     if (!existingUser) {
       return res.status(404).json({ msg: "SP not found" });
@@ -574,7 +501,7 @@ export const forgotPassword = async (req, res) => {
     const hashedPassword = await bcrypt.hash(newPassword, salt);
 
     // Update user's password in the database
-    existingUser.sppassword = hashedPassword;
+    existingUser.password = hashedPassword;
     await existingUser.save();
 
     res.status(200).json({ message: "Password updated successfully" });
@@ -584,27 +511,9 @@ export const forgotPassword = async (req, res) => {
 };
 
 export const getServiceProviderDetailsByEmail = async (req, res) => {
-  // try {
-  //   const { spemail } = req.body;
-
-  //   // Find the service provider by email and select the desired fields
-  //   const serviceProvider = await ServiceProvider.findOne(
-  //     { spemail },
-  //     "spname spmobile spcity spemail spaddress"
-  //   );
-
-  //   if (!serviceProvider) {
-  //     return res.status(404).json({ msg: "Service provider not found" });
-  //   }
-
-  //   res.status(200).json(serviceProvider);
-  // } catch (error) {
-  //   res.status(500).json({ error: error.message });
-  // }
-
   try {
-    const { spemail } = req.body;
-    const userExist = await ServiceProvider.findOne({ spemail });
+    const { email } = req.body;
+    const userExist = await ServiceProvider.findOne({ email });
     if (!userExist) {
       return res.status(404).json({ msg: "service provider data not found" });
     }
@@ -616,8 +525,8 @@ export const getServiceProviderDetailsByEmail = async (req, res) => {
 
 export const getOneServiceProviderEmail = async (req, res) => {
   try {
-    const spemail = req.params.spemail;
-    const userExist = await ServiceProvider.findOne({ spemail });
+    const email = req.params.email;
+    const userExist = await ServiceProvider.findOne({ email });
     if (!userExist) {
       return res.status(404).json({ msg: "service provider data not found" });
     }
