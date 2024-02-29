@@ -17,7 +17,6 @@ import {
   forgotPassword,
   updatewithlogintoken,
   getServiceProviderDetailsById,
-  
 } from "../controller/serviceProviderContoller.js";
 import { authMiddleware_sp } from "../middleware/authMiddleware_sp.js";
 const route = express.Router();
@@ -49,7 +48,6 @@ route.get("/logout", logout);
 route.get("/login", login);
 route.post("/forgotpassword", forgotPassword);
 route.put("/updatewithlogintoken/:id", authMiddleware_sp, updatewithlogintoken);
-
 
 
 export default route;

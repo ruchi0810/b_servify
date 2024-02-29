@@ -82,3 +82,33 @@ export const getReviewsByServiceProviderAndUser = async (req, res) => {
   }
 };
 //GET http://localhost:8000/api/reviews/SP_ID/reviews/USER_ID
+
+//last3 reviews
+export const getLastThreeReviewsByServiceProvider = async (req, res) => {
+  try {
+    const { serviceProviderId } = req.body;
+
+    // Ensure that the service provider exists
+    const serviceProvider = await ServiceProvider.findById(serviceProviderId);
+    if (!serviceProvider) {
+      return res.status(404).json({ msg: "Service provider not found" });
+    }
+
+    // Retrieve the last 3 reviews for the specified service provider
+    const lastThreeReviews = await Review.find({ serviceProviderId })
+      .sort({ _id: -1 }) // Sort by creation date in descending order
+      .limit(3) // Limit the result to 3 reviews
+      .populate({
+        path: "userId",
+        select: "name",
+      });
+
+    res.status(200).json(lastThreeReviews);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+// post localhost:8000/api/reviews/last3reviews
+// {
+//   "serviceProviderId": "65df1f976d4c10c017ae01ee"
+// }
