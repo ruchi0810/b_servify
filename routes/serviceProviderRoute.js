@@ -37,7 +37,7 @@ route.delete("/delete/:id", deleteServiceProvider);
 route.post("/search", SearchServiceProvider_byservice);
 route.get("/getallquery/:serviceName", getServiceProviderByServiceName);
 route.post("/:id/reviews", addReviewToServiceProvider);
-route.post("/:id/ratings", addRatingToServiceProvider);
+
 route.get(
   "/getServiceProviderDetailsByEmail",
   getServiceProviderDetailsByEmail
@@ -49,5 +49,6 @@ route.get("/login", login);
 route.post("/forgotpassword", forgotPassword);
 route.put("/updatewithlogintoken/:id", authMiddleware_sp, updatewithlogintoken);
 
+route.post("/:id/ratings", addRatingToServiceProvider);
 
 export default route;

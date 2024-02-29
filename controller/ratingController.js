@@ -58,3 +58,23 @@ export const getRatingsByServiceProvider_inorder = async (req, res) => {
   }
 };
 //localhost:8000/api/ratings/service-providers_inorder/SP_ID
+
+export const getRatingofspecificuser = async (req, res) => {
+  try {
+    const { userId, serviceProviderId } = req.params;
+
+    const rating = await Rating.findOne({
+      userId,
+      serviceProviderId,
+    });
+
+    if (rating) {
+      return res.json({ rating: rating.rating });
+    } else {
+      return res.json({ rating: 0 });
+    }
+  } catch (error) {
+    console.error("Error getting rating:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};

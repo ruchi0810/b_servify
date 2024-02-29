@@ -25,12 +25,12 @@ export const getReviewsByServiceProvider = async (req, res) => {
       return res.status(404).json({ msg: "Service provider not found" });
     }
 
-    // Retrieve reviews for the specified service provider
-    // const reviews = await Review.find({ serviceProviderId }).populate("userId");
-    const reviews = await Review.find({ serviceProviderId }).populate({
-      path: "userId",
-      select: "name mobile",
-    });
+    const reviews = await Review.find({ serviceProviderId })
+      .sort({ _id: -1 })
+      .populate({
+        path: "userId",
+        select: "name",
+      });
     res.status(200).json(reviews);
   } catch (error) {
     res.status(500).json({ error: error.message });
